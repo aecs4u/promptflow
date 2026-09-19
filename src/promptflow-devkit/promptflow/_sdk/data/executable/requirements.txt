@@ -1,5 +1,5 @@
 openai
-opentelemetry-sdk
+opentelemetry-sdk>=1.39.0,<2.0.0
 tiktoken
 ruamel.yaml
 docstring_parser
@@ -26,10 +26,10 @@ marshmallow
 gitpython
 strictyaml
 waitress
-azure-monitor-opentelemetry-exporter
+azure-monitor-opentelemetry-exporter>=1.0.0b46,<2.0.0
 pyarrow
 pillow
-opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-http>=1.39.0,<2.0.0
 flask-restx
 flask-cors
 pyinstaller

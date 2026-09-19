@@ -10,9 +10,15 @@ import sys
 from azure.monitor.opentelemetry.exporter import AzureMonitorLogExporter
 from azure.monitor.opentelemetry.exporter._constants import _APPLICATION_INSIGHTS_EVENT_MARKER_ATTRIBUTE
 from azure.monitor.opentelemetry.exporter._generated.models import TelemetryItem
-from opentelemetry.sdk._logs import LogData, LoggerProvider, LoggingHandler
+from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
 from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
 from opentelemetry.util.types import Attributes
+
+try:
+    # LogData was removed in OpenTelemetry 1.39 in favor of ReadableLogRecord.
+    from opentelemetry.sdk._logs import ReadableLogRecord
+except ImportError:  # pragma: no cover - compatibility with older environments
+    from opentelemetry.sdk._logs import LogData as ReadableLogRecord
 
 from promptflow._sdk._configuration import Configuration
 
@@ -58,9 +64,12 @@ class PromptFlowSDKExporter(AzureMonitorLogExporter):
         super().__init__(**kwargs)
         self._custom_dimensions = custom_dimensions
 
-    def _log_to_envelope(self, log_data: LogData) -> TelemetryItem:
-        log_data.log_record.attributes.update(self._custom_dimensions)
-        envelope = super()._log_to_envelope(log_data=log_data)
+    def _log_to_envelope(self, readable_log_record: ReadableLogRecord) -> TelemetryItem:
+        readable_log_record.log_record.attributes.update(self._custom_dimensions)
+        # Use a positional argument because the Azure exporter renamed this
+        # parameter from ``log_data`` to ``readable_log_record`` in its OTel 1.39
+        # compatibility update.
+        envelope = super()._log_to_envelope(readable_log_record)
         # scrub data before sending to appinsights
         role = get_scrubbed_cloud_role()
         envelope.tags["ai.cloud.role"] = role

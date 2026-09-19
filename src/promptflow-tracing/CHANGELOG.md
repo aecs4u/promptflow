@@ -1,5 +1,11 @@
 # promptflow-tracing package
 
+## v1.18.1 (Unreleased)
+
+### Improvements
+
+- Updated OpenTelemetry SDK compatibility to support current releases and Logfire.
+
 ## v1.17.1 (2025.1.13)
 
 ### Others
